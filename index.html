@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#1a1a2e">
-  <title>Swap Meet — Trade &amp; Borrow Tracker</title><link rel="stylesheet" href="styles.css">
+  <title>Swap Meet — Trade &amp; Borrow Tracker</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E⇄%3C/text%3E%3C/svg%3E"><link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="topbar"><a class="brand" href="#main">Swap Meet</a><button id="add-toggle" class="primary" type="button" aria-expanded="false" aria-controls="swap-form-wrap">+ Add swap</button></header>
@@ -11,19 +11,18 @@
     <section id="swap-form-wrap" class="note form-note" aria-labelledby="form-title" hidden>
       <div class="section-heading"><div><span class="eyebrow">New note</span><h1 id="form-title">What changed hands?</h1></div><button id="cancel-form" class="icon-button" type="button" aria-label="Close add swap form">×</button></div>
       <form id="swap-form" novalidate>
-        <div class="field field-wide"><label for="name">Item</label><input id="name" name="name" required maxlength="80" autocomplete="off" placeholder="Camping tent" aria-describedby="name-error"><p id="name-error" class="field-error" role="alert"></p></div>
+        <div class="field field-wide"><label for="name">Item</label><input id="name" name="name" required maxlength="80" autocomplete="off" placeholder="Camping tent…" aria-describedby="name-error"><p id="name-error" class="field-error" role="alert"></p></div>
         <div class="field"><label for="direction">Direction</label><select id="direction" name="direction" required aria-describedby="direction-error"><option value="">Choose one</option><option value="lent">→ I lent it</option><option value="borrowed">← I borrowed it</option><option value="swapped">⇄ We swapped</option></select><p id="direction-error" class="field-error" role="alert"></p></div>
-        <div class="field"><label for="person">Who with?</label><input id="person" name="person" required maxlength="80" autocomplete="name" placeholder="Marcus" aria-describedby="person-error"><p id="person-error" class="field-error" role="alert"></p></div>
+        <div class="field"><label for="person">Who with?</label><input id="person" name="person" required maxlength="80" autocomplete="name" placeholder="Marcus…" aria-describedby="person-error"><p id="person-error" class="field-error" role="alert"></p></div>
         <div class="field"><label for="dueDate">Due back <span>(optional)</span></label><input id="dueDate" name="dueDate" type="date"></div>
         <button class="primary save" type="submit">Save swap</button>
       </form>
     </section>
-    <section id="summary" class="summary" aria-label="Active exchange summary" aria-live="polite"><div class="summary-loading"></div></section>
+    <section id="summary" class="summary" aria-label="Active exchange summary"><div class="summary-loading"></div></section>
     <section aria-labelledby="active-title"><header class="list-heading"><span class="eyebrow">Still out there</span><h2 id="active-title">Active swaps</h2></header><div id="active-list" class="card-list" aria-busy="true"><div class="note skeleton"></div></div></section>
     <details id="history" class="history"><summary><strong>History <span id="history-count">0</span></strong></summary><div id="history-list" class="card-list"></div></details>
   </main>
-  <div id="undo-toast" class="toast" role="status" hidden><span>Removed from history.</span><button id="undo-delete" type="button">Undo</button></div>
-  <p id="status" class="sr-only" aria-live="polite"></p>
+  <div id="undo-toast" class="toast" role="status" hidden><span id="toast-message"></span><button id="undo-delete" type="button" hidden>Undo</button></div>
   <script type="module" src="dist/bundle.js"></script>
 </body>
 </html>

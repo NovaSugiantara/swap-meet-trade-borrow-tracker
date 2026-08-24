@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { validateForm } from "../src/handlers.ts";
 import { addItem, completeItem, deleteItem, getStats, loadState, parseState, restoreItem, saveState, STORAGE_KEY } from "../src/store.ts";
 import type { AppState, SwapItem } from "../src/types.ts";
+import { renderActiveList } from "../src/ui.ts";
 
 const item = (overrides: Partial<SwapItem> = {}): SwapItem => ({ id: "1", name: "Drill", direction: "borrowed", person: "Priya", dueDate: null, status: "active", createdAt: "2026-08-24T00:00:00.000Z", completedAt: null, ...overrides });
 
@@ -20,8 +21,10 @@ test("storage handles missing, corrupt, valid, and failed writes", () => {
   assert.deepEqual(parseState(JSON.stringify(state)), { state, error: null });
   assert.ok(loadState({ getItem: () => { throw new Error(); }, setItem: () => {} }).error);
   assert.ok(saveState(state, { getItem: () => null, setItem: () => { throw new Error(); } }));
-  let saved = ""; assert.equal(saveState(state, { getItem: () => null, setItem: (key, value) => { assert.equal(key, STORAGE_KEY); saved = value; } }), null);
-  assert.equal(saved, JSON.stringify(state));
+  const values = new Map<string, string>();
+  const memory = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => values.set(key, value) };
+  assert.equal(saveState(state, memory), null); assert.equal(values.get(STORAGE_KEY), JSON.stringify(state));
+  assert.deepEqual(loadState(memory), { state, error: null });
 });
 
 test("CRUD and summary keep one immutable state path", () => {
@@ -34,4 +37,9 @@ test("CRUD and summary keep one immutable state path", () => {
   assert.equal(completeItem(completed, "missing"), completed);
   const removed = deleteItem(completed, "1");
   assert.deepEqual(restoreItem(removed, completed.items[1]!, 1), completed);
+});
+
+test("rendering escapes user content", () => {
+  const html = renderActiveList([item({ name: '<img src=x onerror="alert(1)">', person: "A & B" })]);
+  assert.doesNotMatch(html, /<img/); assert.match(html, /&lt;img/); assert.match(html, /A &amp; B/);
 });

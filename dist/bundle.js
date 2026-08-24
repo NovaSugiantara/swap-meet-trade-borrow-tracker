@@ -55,16 +55,16 @@ function parseState(raw) {
     return { state: emptyState(), error: "We couldn't read your saved swaps. Start again below." };
   }
 }
-function loadState(storage = localStorage) {
+function loadState(storage) {
   try {
-    return parseState(storage.getItem(STORAGE_KEY));
+    return parseState((storage ?? globalThis.localStorage).getItem(STORAGE_KEY));
   } catch {
     return { state: emptyState(), error: "Saving is blocked. Keep this tab open to protect your changes." };
   }
 }
-function saveState(state2, storage = localStorage) {
+function saveState(state2, storage) {
   try {
-    storage.setItem(STORAGE_KEY, JSON.stringify(state2));
+    (storage ?? globalThis.localStorage).setItem(STORAGE_KEY, JSON.stringify(state2));
     return null;
   } catch {
     return "We couldn't save this. Keep this tab open and try again.";
@@ -130,12 +130,20 @@ var historyList = must("#history-list");
 var summary = must("#summary");
 var errorBox = must("#storage-error");
 var toast = must("#undo-toast");
-var status = must("#status");
+var toastMessage = must("#toast-message");
+var undoButton = must("#undo-delete");
 var state = emptyState();
 var storageError = null;
 var pendingDelete = null;
+var noticeTimer = null;
 function announce(message) {
-  status.textContent = message;
+  if (noticeTimer) clearTimeout(noticeTimer);
+  toastMessage.textContent = message;
+  undoButton.hidden = true;
+  toast.hidden = false;
+  noticeTimer = setTimeout(() => {
+    if (!pendingDelete) toast.hidden = true;
+  }, 3e3);
 }
 function render() {
   summary.innerHTML = renderSummary(getStats(state.items));
@@ -162,6 +170,9 @@ function makeItem(data) {
   return { id: crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`, name: data.name, direction: data.direction, person: data.person, dueDate: data.dueDate, status: "active", createdAt: (/* @__PURE__ */ new Date()).toISOString(), completedAt: null };
 }
 function showUndo(item, index) {
+  if (noticeTimer) clearTimeout(noticeTimer);
+  toastMessage.textContent = "Removed from history.";
+  undoButton.hidden = false;
   toast.hidden = false;
   const timer = setTimeout(() => {
     toast.hidden = true;
@@ -208,9 +219,8 @@ document.addEventListener("click", (event) => handleListClick(event, (action, id
   storageError = saveState(state);
   render();
   showUndo(item, index);
-  announce(storageError ?? "Removed from history. Undo is available.");
 }));
-must("#undo-delete").addEventListener("click", () => {
+undoButton.addEventListener("click", () => {
   if (!pendingDelete) return;
   clearTimeout(pendingDelete.timer);
   const { item, index } = pendingDelete;

@@ -12,13 +12,19 @@ const historyList = must<HTMLElement>("#history-list");
 const summary = must<HTMLElement>("#summary");
 const errorBox = must<HTMLElement>("#storage-error");
 const toast = must<HTMLElement>("#undo-toast");
-const status = must<HTMLElement>("#status");
+const toastMessage = must<HTMLElement>("#toast-message");
+const undoButton = must<HTMLButtonElement>("#undo-delete");
 
 let state: AppState = emptyState();
 let storageError: string | null = null;
 let pendingDelete: { item: SwapItem; index: number; timer: ReturnType<typeof setTimeout> } | null = null;
+let noticeTimer: ReturnType<typeof setTimeout> | null = null;
 
-function announce(message: string): void { status.textContent = message; }
+function announce(message: string): void {
+  if (noticeTimer) clearTimeout(noticeTimer);
+  toastMessage.textContent = message; undoButton.hidden = true; toast.hidden = false;
+  noticeTimer = setTimeout(() => { if (!pendingDelete) toast.hidden = true; }, 3000);
+}
 function render(): void {
   summary.innerHTML = renderSummary(getStats(state.items));
   activeList.innerHTML = renderActiveList(state.items); activeList.removeAttribute("aria-busy");
@@ -35,7 +41,8 @@ function makeItem(data: SwapFormData): SwapItem {
   return { id: crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`, name: data.name, direction: data.direction as SwapItem["direction"], person: data.person, dueDate: data.dueDate, status: "active", createdAt: new Date().toISOString(), completedAt: null };
 }
 function showUndo(item: SwapItem, index: number): void {
-  toast.hidden = false;
+  if (noticeTimer) clearTimeout(noticeTimer);
+  toastMessage.textContent = "Removed from history."; undoButton.hidden = false; toast.hidden = false;
   const timer = setTimeout(() => { toast.hidden = true; pendingDelete = null; }, 6000);
   pendingDelete = { item, index, timer };
 }
@@ -53,10 +60,10 @@ document.addEventListener("click", event => handleListClick(event, (action, id) 
   if (pendingDelete) { announce("Use Undo or wait before deleting another item."); return; }
   const index = state.items.findIndex(item => item.id === id && item.status === "completed");
   const item = state.items[index]; if (index < 0 || !item) return;
-  const next = deleteItem(state, id); state = next; storageError = saveState(state); render(); showUndo(item, index); announce(storageError ?? "Removed from history. Undo is available.");
+  const next = deleteItem(state, id); state = next; storageError = saveState(state); render(); showUndo(item, index);
 }));
 
-must<HTMLButtonElement>("#undo-delete").addEventListener("click", () => {
+undoButton.addEventListener("click", () => {
   if (!pendingDelete) return; clearTimeout(pendingDelete.timer);
   const { item, index } = pendingDelete; pendingDelete = null; toast.hidden = true;
   commit(restoreItem(state, item, index), "Restored to history.");

@@ -27,13 +27,13 @@ export function parseState(raw: string | null): LoadResult {
   }
 }
 
-export function loadState(storage: StorageLike = localStorage): LoadResult {
-  try { return parseState(storage.getItem(STORAGE_KEY)); }
+export function loadState(storage?: StorageLike): LoadResult {
+  try { return parseState((storage ?? globalThis.localStorage).getItem(STORAGE_KEY)); }
   catch { return { state: emptyState(), error: "Saving is blocked. Keep this tab open to protect your changes." }; }
 }
 
-export function saveState(state: AppState, storage: StorageLike = localStorage): string | null {
-  try { storage.setItem(STORAGE_KEY, JSON.stringify(state)); return null; }
+export function saveState(state: AppState, storage?: StorageLike): string | null {
+  try { (storage ?? globalThis.localStorage).setItem(STORAGE_KEY, JSON.stringify(state)); return null; }
   catch { return "We couldn't save this. Keep this tab open and try again."; }
 }
 

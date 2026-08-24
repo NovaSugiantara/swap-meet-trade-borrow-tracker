@@ -1,0 +1,23 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - link "Swap Meet" [ref=e3] [cursor=pointer]:
+      - /url: "#main"
+    - button "+ Add swap" [ref=e4] [cursor=pointer]
+  - main [ref=e5]:
+    - region "Active exchange summary" [ref=e6]:
+      - generic [ref=e7]:
+        - strong [ref=e8]: "0"
+        - generic [ref=e9]: You've lent 0 items
+      - generic [ref=e10]:
+        - strong [ref=e11]: "0"
+        - generic [ref=e12]: You owe back 0 items
+    - region [ref=e13]:
+      - generic [ref=e14]:
+        - text: Still out there
+        - heading "Active swaps" [level=2] [ref=e15]
+      - generic [ref=e17]:
+        - strong [ref=e18]: Nothing tracked yet.
+        - text: Add your first swap and get it out of your head.
+        - button "+ Add swap" [ref=e19] [cursor=pointer]
+    - group [ref=e20]:
+      - strong [ref=e22] [cursor=pointer]: History 0
