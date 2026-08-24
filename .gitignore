@@ -1,8 +1,7 @@
 node_modules/
-package-lock.json
-dist/*
+dist/
 package-lock.json
 docs/
+.playwright-mcp/
 *.log
 .DS_Store
-.playwright-mcp
