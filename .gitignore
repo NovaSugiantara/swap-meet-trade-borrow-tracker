@@ -5,3 +5,4 @@ package-lock.json
 docs/
 *.log
 .DS_Store
+.playwright-mcp
