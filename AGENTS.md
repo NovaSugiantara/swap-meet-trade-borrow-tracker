@@ -3,8 +3,8 @@
 ## Before changing code
 
 - Read the parent challenge guide at `~/Project/challenge/AGENTS.md`; its document protocol and commit gates are mandatory here.
-- Read `docs/BRIEF.md` and `docs/SRS.md`. `docs/PRD.md` is currently empty and `docs/DESIGN.md` is missing, so do not invent requirements or start implementation until that gap is resolved.
-- This repository currently has only a placeholder `README.md`, no package manifest/lockfile, and no verified build, test, lint, formatter, CI, or OpenCode command. Do not assume `npm` scripts; inspect again after the toolchain is added.
+- Read `docs/PRD.md`, `docs/SRS.md`, and `docs/DESIGN.md` after the brief. Later documents refine earlier ones; use the SRS `{ items: SwapItem[] }` storage envelope where the PRD's array wording conflicts.
+- Use the checked-in `npm` scripts; `npm run verify` runs strict type-checking, tests, and the production bundle.
 
 ## Product constraints
 
@@ -22,4 +22,4 @@
 ## Change and commit hygiene
 
 - The parent guide requires one working feature per commit, a 25 KB raw app-source cap, visible undo for deletes, and runnable tests. Measure source size before each source commit.
-- `docs/` is currently untracked. For the repository-bootstrap change, stage `AGENTS.md` explicitly and leave `docs/` untouched and uncommitted; do not use `git add -A`.
+- `docs/` is intentionally untracked. Stage implementation paths explicitly and leave `docs/` uncommitted; do not use `git add -A`.
